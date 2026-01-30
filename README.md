@@ -8,6 +8,20 @@
 > This project has NOT been fully tested. Use at your own risk.
 > The authors are not responsible for any network outages or device issues caused by using this project.
 
+## 一键安装
+
+SSH 登录 UDM-SE，执行：
+
+```bash
+bash <(curl -sL https://raw.githubusercontent.com/silicondawn/udmse-mihomo/main/install.sh)
+```
+
+卸载：
+
+```bash
+bash <(curl -sL https://raw.githubusercontent.com/silicondawn/udmse-mihomo/main/uninstall.sh)
+```
+
 ## 环境
 - UDM-SE, UniFi OS 5.0.12
 - Debian 11 Bullseye (aarch64)
