@@ -10,7 +10,7 @@ mode: rule
 log-level: info
 ipv6: false
 external-controller: 0.0.0.0:9090
-# external-ui: /data/mihomo/ui  # 可选: 下载 yacd 面板
+external-ui: /data/mihomo/ui
 
 # DNS 设置
 dns:

@@ -26,7 +26,14 @@ curl -Lo geosite.dat https://github.com/MetaCubeX/meta-rules-dat/releases/latest
 curl -Lo country.mmdb https://github.com/MetaCubeX/meta-rules-dat/releases/latest/download/country.mmdb
 echo "规则数据下载完成"
 
-echo "=== 4. 检查配置文件 ==="
+echo "=== 4. 下载 Yacd-Meta 面板 ==="
+mkdir -p ${MIHOMO_DIR}/ui
+curl -Lo /tmp/yacd-meta.tar.gz https://github.com/DustinWin/proxy-tools/releases/download/Dashboard/Yacd-meta.tar.gz
+tar xzf /tmp/yacd-meta.tar.gz -C ${MIHOMO_DIR}/ui/
+rm -f /tmp/yacd-meta.tar.gz
+echo "面板下载完成"
+
+echo "=== 5. 检查配置文件 ==="
 if [ ! -f config.yaml ]; then
     echo "❌ 请先将 config.yaml 放到 ${MIHOMO_DIR}/"
     exit 1
@@ -37,23 +44,23 @@ if grep -q "YOUR_CLASH_SUBSCRIPTION_URL_HERE" config.yaml; then
     exit 1
 fi
 
-echo "=== 5. 安装 systemd 服务 ==="
+echo "=== 6. 安装 systemd 服务 ==="
 cp mihomo.service /etc/systemd/system/ 2>/dev/null || cp ${MIHOMO_DIR}/mihomo.service /etc/systemd/system/
 systemctl daemon-reload
 systemctl enable mihomo
 
-echo "=== 6. 安装 on_boot 脚本 ==="
+echo "=== 7. 安装 on_boot 脚本 ==="
 cp /data/on_boot.d/20-mihomo.sh /data/on_boot.d/ 2>/dev/null || true
 chmod +x /data/on_boot.d/20-mihomo.sh
 
-echo "=== 7. 启动 mihomo ==="
+echo "=== 8. 启动 mihomo ==="
 systemctl start mihomo
 sleep 2
 
 if systemctl is-active --quiet mihomo; then
     echo "✅ mihomo 启动成功！"
     echo ""
-    echo "=== 8. 应用 TProxy 规则 ==="
+    echo "=== 9. 应用 TProxy 规则 ==="
     bash /data/on_boot.d/20-mihomo.sh
     echo ""
     echo "✅ 部署完成！"
@@ -63,7 +70,7 @@ if systemctl is-active --quiet mihomo; then
     echo "  2. 在 UniFi 控制面板将 LAN DHCP DNS 改为 UDM-SE 的 IP"
     echo "  3. 测试: curl -x http://127.0.0.1:7890 https://www.google.com"
     echo ""
-    echo "=== 9. 安装 watchdog ==="
+    echo "=== 10. 安装 watchdog ==="
     cp ${MIHOMO_DIR}/mihomo-watchdog.sh ${MIHOMO_DIR}/mihomo-watchdog.sh 2>/dev/null
     chmod +x ${MIHOMO_DIR}/mihomo-watchdog.sh
     cp ${MIHOMO_DIR}/mihomo-watchdog.service /etc/systemd/system/
