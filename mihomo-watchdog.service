@@ -1,0 +1,7 @@
+[Unit]
+Description=mihomo watchdog timer
+After=mihomo.service
+
+[Service]
+Type=oneshot
+ExecStart=/data/mihomo/mihomo-watchdog.sh

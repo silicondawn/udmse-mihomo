@@ -62,6 +62,16 @@ if systemctl is-active --quiet mihomo; then
     echo "  1. 管理面板: http://$(hostname -I | awk '{print $1}'):9090"
     echo "  2. 在 UniFi 控制面板将 LAN DHCP DNS 改为 UDM-SE 的 IP"
     echo "  3. 测试: curl -x http://127.0.0.1:7890 https://www.google.com"
+    echo ""
+    echo "=== 9. 安装 watchdog ==="
+    cp ${MIHOMO_DIR}/mihomo-watchdog.sh ${MIHOMO_DIR}/mihomo-watchdog.sh 2>/dev/null
+    chmod +x ${MIHOMO_DIR}/mihomo-watchdog.sh
+    cp ${MIHOMO_DIR}/mihomo-watchdog.service /etc/systemd/system/
+    cp ${MIHOMO_DIR}/mihomo-watchdog.timer /etc/systemd/system/
+    systemctl daemon-reload
+    systemctl enable --now mihomo-watchdog.timer
+    echo "✅ watchdog 已启动（每2分钟检查）"
+    echo "   mihomo 挂了会自动清除 TProxy 规则恢复直连，并尝试重启"
 else
     echo "❌ mihomo 启动失败，检查日志:"
     echo "  journalctl -u mihomo -n 50"
