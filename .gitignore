@@ -1,0 +1,10 @@
+# 二进制和数据文件（部署时下载）
+mihomo
+*.dat
+*.mmdb
+*.db
+*.gz
+*.log
+ui/
+providers/
+config-test.yaml
