@@ -1,5 +1,13 @@
 # UDM-SE mihomo 透明代理部署方案
 
+> ⚠️ **免责声明 / Disclaimer**
+> 
+> 本项目尚未经过完整测试，仅供学习参考。使用本项目可能导致网络中断或设备异常。
+> **使用风险自负，作者不承担任何责任。**
+> 
+> This project has NOT been fully tested. Use at your own risk.
+> The authors are not responsible for any network outages or device issues caused by using this project.
+
 ## 环境
 - UDM-SE, UniFi OS 5.0.12
 - Debian 11 Bullseye (aarch64)
