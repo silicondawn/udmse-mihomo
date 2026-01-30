@@ -1,0 +1,128 @@
+# mihomo 配置 - UDM-SE 透明代理
+# 文档: https://wiki.metacubex.one/
+
+# 基本设置
+mixed-port: 7890
+tproxy-port: 7893
+allow-lan: true
+bind-address: "*"
+mode: rule
+log-level: info
+ipv6: false
+external-controller: 0.0.0.0:9090
+# external-ui: /data/mihomo/ui  # 可选: 下载 yacd 面板
+
+# DNS 设置
+dns:
+  enable: true
+  listen: 0.0.0.0:53
+  ipv6: false
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+    - "*.lan"
+    - "*.local"
+    - "*.hen-ladon.ts.net"
+    - "localhost.ptlogin2.qq.com"
+    - "+.msftconnecttest.com"
+    - "+.msftncsi.com"
+  default-nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  nameserver:
+    - https://doh.pub/dns-query
+    - https://dns.alidns.com/dns-query
+  nameserver-policy:
+    # Tailscale 域名走 MagicDNS
+    "+.hen-ladon.ts.net": "100.100.100.100"
+    # 国内域名走国内 DNS
+    "geosite:cn,private":
+      - https://doh.pub/dns-query
+      - https://dns.alidns.com/dns-query
+
+# TUN 模式 (备选，如果 TProxy 有问题可以切换)
+# tun:
+#   enable: true
+#   stack: system
+#   dns-hijack:
+#     - any:53
+#   auto-route: true
+#   auto-detect-interface: true
+
+# 订阅代理
+proxy-providers:
+  my-sub:
+    type: http
+    url: "YOUR_CLASH_SUBSCRIPTION_URL_HERE"
+    interval: 3600
+    path: ./providers/my-sub.yaml
+    health-check:
+      enable: true
+      interval: 300
+      url: https://www.gstatic.com/generate_204
+
+# 代理组
+proxy-groups:
+  - name: "🚀 节点选择"
+    type: select
+    use:
+      - my-sub
+    proxies:
+      - "♻️ 自动选择"
+      - DIRECT
+
+  - name: "♻️ 自动选择"
+    type: url-test
+    use:
+      - my-sub
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+
+  - name: "🎬 流媒体"
+    type: select
+    use:
+      - my-sub
+    proxies:
+      - "🚀 节点选择"
+
+  - name: "🤖 AI 服务"
+    type: select
+    use:
+      - my-sub
+    proxies:
+      - "🚀 节点选择"
+
+  - name: "🐟 漏网之鱼"
+    type: select
+    proxies:
+      - "🚀 节点选择"
+      - DIRECT
+
+# 分流规则
+rules:
+  # 私有地址直连
+  - IP-CIDR,192.168.0.0/16,DIRECT
+  - IP-CIDR,10.0.0.0/8,DIRECT
+  - IP-CIDR,172.16.0.0/12,DIRECT
+  - IP-CIDR,127.0.0.0/8,DIRECT
+  - IP-CIDR,100.64.0.0/10,DIRECT  # Tailscale CGNAT
+
+  # AI 服务
+  - DOMAIN-SUFFIX,openai.com,🤖 AI 服务
+  - DOMAIN-SUFFIX,anthropic.com,🤖 AI 服务
+  - DOMAIN-SUFFIX,claude.ai,🤖 AI 服务
+  - DOMAIN-SUFFIX,bard.google.com,🤖 AI 服务
+  - DOMAIN-SUFFIX,gemini.google.com,🤖 AI 服务
+
+  # 流媒体
+  - GEOSITE,netflix,🎬 流媒体
+  - GEOSITE,disney,🎬 流媒体
+  - GEOSITE,youtube,🎬 流媒体
+
+  # 国内直连
+  - GEOSITE,cn,DIRECT
+  - GEOIP,CN,DIRECT
+
+  # 兜底
+  - MATCH,🐟 漏网之鱼

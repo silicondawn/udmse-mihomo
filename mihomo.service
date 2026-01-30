@@ -1,0 +1,13 @@
+[Unit]
+Description=mihomo Daemon
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/data/mihomo/mihomo -d /data/mihomo
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=1048576
+
+[Install]
+WantedBy=multi-user.target
